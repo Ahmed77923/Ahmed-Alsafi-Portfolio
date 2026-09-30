@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { AnimatePresence, motion, useScroll } from "framer-motion";
 import { Container } from "../components/Container";
 import { FeaturedProject } from "../components/FeaturedProject";
-import { ProjectCard } from "../components/ProjectCard";
+import { ProjectRow } from "../components/ProjectRow";
 import { GithubIcon, ArrowRightIcon } from "../components/icons";
 import {
   featuredProject,
@@ -27,6 +28,12 @@ export function Projects() {
   const visible = gridProjects.filter((p) => filter === "all" || p.domain === filter);
   const showFeatured = filter === "all" || filter === "production-ml";
   const showOther = filter === "all" || filter === "frontend";
+
+  const railRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: railRef,
+    offset: ["start center", "end center"],
+  });
 
   return (
     <section id="projects" className="border-t border-[var(--border)] py-24 sm:py-32">
@@ -60,18 +67,50 @@ export function Projects() {
         </div>
 
         {showFeatured && (
-          <div className="mb-8">
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10% 0px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
             <FeaturedProject project={featuredProject} />
-          </div>
+          </motion.div>
         )}
 
-        {visible.length > 0 && (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {visible.map((project) => (
-              <ProjectCard key={project.slug} project={project} />
-            ))}
-          </div>
-        )}
+        <div ref={railRef} className="relative">
+          {/* Scroll-progress rail tracking position through the project rows. */}
+          {visible.length > 0 && (
+            <div
+              className="absolute -left-6 top-0 hidden h-full w-px bg-[var(--border)] lg:block"
+              aria-hidden="true"
+            >
+              <motion.div
+                className="w-px origin-top bg-[var(--accent2)]"
+                style={{ scaleY: scrollYProgress, height: "100%" }}
+              />
+            </div>
+          )}
+
+          <AnimatePresence mode="popLayout">
+            {visible.length > 0 && (
+              <div className="flex flex-col gap-16 sm:gap-20">
+                {visible.map((project, i) => (
+                  <motion.div
+                    key={project.slug}
+                    layout
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, scale: 0.97 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ProjectRow project={project} index={i + 1} align={i % 2 === 0 ? "left" : "right"} />
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {!showFeatured && visible.length === 0 && !showOther && (
           <p className="py-12 text-center text-[var(--text-muted)]">No projects in this category yet.</p>

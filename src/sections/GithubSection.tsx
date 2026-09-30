@@ -1,8 +1,19 @@
+import { motion, type Variants } from "framer-motion";
 import { Container } from "../components/Container";
 import { Tag } from "../components/Tag";
 import { GithubIcon, ArrowRightIcon } from "../components/icons";
 import { projects } from "../data/projects";
 import { site } from "../data/site";
+
+const gridVariants: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
 
 const repos = projects.map((p) => ({
   name: p.repo,
@@ -33,13 +44,21 @@ export function GithubSection() {
           </a>
         </div>
 
-        <div className="grid gap-px overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2">
+        <motion.div
+          className="grid gap-px overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2"
+          variants={gridVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-10% 0px" }}
+        >
           {repos.map((repo) => (
-            <a
+            <motion.a
               key={repo.name}
               href={repo.url}
               target="_blank"
               rel="noreferrer"
+              variants={cardVariants}
+              whileHover={{ y: -3 }}
               className="group flex flex-col gap-3 bg-[var(--bg)] p-6 transition-colors hover:bg-[var(--surface)]"
             >
               <div className="flex items-center justify-between gap-3">
@@ -57,9 +76,9 @@ export function GithubSection() {
                   </Tag>
                 ))}
               </div>
-            </a>
+            </motion.a>
           ))}
-        </div>
+        </motion.div>
       </Container>
     </section>
   );

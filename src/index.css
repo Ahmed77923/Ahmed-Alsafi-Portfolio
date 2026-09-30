@@ -108,6 +108,12 @@ body {
   left: 1rem;
 }
 
+.has-custom-cursor a,
+.has-custom-cursor button,
+.has-custom-cursor [role="button"] {
+  cursor: none;
+}
+
 .grid-fade {
   background-image:
     linear-gradient(to right, var(--border) 1px, transparent 1px),

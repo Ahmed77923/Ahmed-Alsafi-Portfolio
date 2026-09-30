@@ -1,7 +1,18 @@
 import { useState } from "react";
+import { motion, type Variants } from "framer-motion";
 import { Container } from "../components/Container";
 import { GithubIcon, LinkedInIcon, MailIcon, CopyIcon, CheckIcon } from "../components/icons";
 import { site } from "../data/site";
+
+const containerVariants: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.15 } },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
 
 export function Contact() {
   const [copied, setCopied] = useState(false);
@@ -18,17 +29,37 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="border-t border-[var(--border)] py-24 sm:py-32">
-      <Container className="max-w-3xl">
-        <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
-          Have a project or opportunity? Let's connect.
-        </h2>
-        <p className="mt-4 max-w-lg text-[var(--text-muted)]">
-          The fastest ways to reach me are below — happy to talk about roles, collaborations, or
-          any of the projects on this page.
-        </p>
+    <section id="contact" className="relative overflow-hidden border-t border-[var(--border)] py-28 sm:py-36">
+      <div
+        className="pointer-events-none absolute right-[10%] top-1/2 z-0 h-[320px] w-[320px] -translate-y-1/2 rounded-full opacity-[0.12] blur-[110px]"
+        style={{ background: "var(--accent2)" }}
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute left-[20%] bottom-0 z-0 h-[220px] w-[220px] rounded-full opacity-[0.1] blur-[100px]"
+        style={{ background: "var(--accent)" }}
+        aria-hidden="true"
+      />
 
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+      <Container className="relative z-10 max-w-3xl">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-10% 0px" }}
+        >
+          <motion.h2
+            variants={itemVariants}
+            className="font-display text-4xl leading-[1.1] tracking-tight sm:text-5xl"
+          >
+            Have a project or opportunity? Let's connect.
+          </motion.h2>
+          <motion.p variants={itemVariants} className="mt-5 max-w-lg text-lg text-[var(--text-muted)]">
+            The fastest ways to reach me are below — happy to talk about roles, collaborations, or
+            any of the projects on this page.
+          </motion.p>
+
+          <motion.div variants={itemVariants} className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           {site.email ? (
             <button
               type="button"
@@ -67,7 +98,8 @@ export function Contact() {
               LinkedIn
             </a>
           )}
-        </div>
+          </motion.div>
+        </motion.div>
       </Container>
     </section>
   );

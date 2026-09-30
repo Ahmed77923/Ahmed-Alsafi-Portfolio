@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Container } from "../components/Container";
-import { Tag } from "../components/Tag";
+import { SkillCluster } from "../components/SkillCluster";
 import { skillCategories } from "../data/skills";
 import { cx } from "../lib/utils";
 
@@ -53,18 +53,17 @@ export function Skills() {
         >
           {skillCategories
             .filter((category) => active === null || category.id === active)
-            .map((category) => (
-              <div key={category.id} className="bg-[var(--bg)] p-6 sm:p-8">
-                <h3 className="mb-4 font-display text-lg">{category.label}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {category.items.map((item) => (
-                    <Tag key={item} muted={active === null}>
-                      {item}
-                    </Tag>
-                  ))}
+            .map((category) => {
+              const originalIndex = skillCategories.findIndex((c) => c.id === category.id);
+              return (
+                <div key={category.id} className="bg-[var(--bg)]">
+                  <SkillCluster
+                    category={category}
+                    accent={originalIndex % 2 === 0 ? "accent2" : "accent"}
+                  />
                 </div>
-              </div>
-            ))}
+              );
+            })}
         </div>
       </Container>
     </section>
